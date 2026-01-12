@@ -1,10 +1,8 @@
 # -----------------------------------------------------------------------------
 # SISTEMA DE RECOMENDACIÓN DE PELÍCULAS: CINEGUIA BCS
-# Este programa filtra una base de datos de películas basándose en la edad,
-# preferencias de género, duración y calidad (calificación).
 # -----------------------------------------------------------------------------
 
-# Paso 1: Definición de la base de datos (Lista de diccionarios)
+# Base de datos de películas
 peliculas = [
     {"titulo": "Diario de una pasión", "genero": "Drama", "duracion": 123, "calificacion": 4},
     {"titulo": "El increíble castillo vagabundo", "genero": "Animación", "duracion": 119, "calificacion": 5},
@@ -38,69 +36,67 @@ peliculas = [
     {"titulo": "La isla siniestra", "genero": "Thriller", "duracion": 139, "calificacion": 4}
 ]
 
-# Mensaje de bienvenida con los géneros disponibles
 print("====================================================")
 print("       BIENVENIDO AL CINEGUIA BCS")
 print("====================================================")
-print("Aquí encontrarás una variedad de películas de los géneros:")
-print("Drama, Animación, Terror, Suspenso, Comedia,")
-print("Ciencia ficción, Thriller y Acción.\n")
 
-# -----------------------------------------------------------------------------
-# CAPTURA Y VALIDACIÓN DE DATOS DEL USUARIO
-# -----------------------------------------------------------------------------
+# -----------------------------------------
+# CAPTURA DE EDAD
+# -----------------------------------------
 while True:
     edad_texto = input("Ingresa tu edad: ")
     if edad_texto.isdigit() and int(edad_texto) > 0:
         edad = int(edad_texto)
         break
-    print("Edad inválida. Por favor ingresa un número positivo.")
+    print("Edad inválida.")
 
-# Capturamos el género y usamos capitalize para que coincida con la base de datos
+# -----------------------------------------
+# PREFERENCIAS DEL USUARIO
+# -----------------------------------------
 genero_usuario = input("Ingresa el género que deseas ver: ").strip().capitalize()
 
 while True:
     duracion_opcion = input("Duración deseada (Corta / Media / Larga): ").capitalize()
     if duracion_opcion in ["Corta", "Media", "Larga"]:
         break
-    print("Opción inválida. Elige entre Corta, Media o Larga.")
+    print("Opción inválida.")
 
-# -----------------------------------------------------------------------------
-# BÚSQUEDA ESPECÍFICA POR TÍTULO
-# -----------------------------------------------------------------------------
-buscar_sn = input("\n¿Deseas buscar una película específica por título? (SI/NO): ").upper()
+# -----------------------------------------
+# BÚSQUEDA POR TÍTULO
+# -----------------------------------------
+buscar_sn = input("¿Deseas buscar una película específica? (SI/NO): ").upper()
 
 if buscar_sn == "SI":
-    titulo_buscar = input("Ingresa el título de la película: ").lower()
+    titulo_buscar = input("Ingresa el título: ").lower()
     encontrada = False
 
     for pelicula in peliculas:
         if pelicula["titulo"].lower() == titulo_buscar:
-            print("\n¡Película encontrada!")
-            print(f"-> {pelicula['titulo']} | Género: {pelicula['genero']} | Duración: {pelicula['duracion']} min")
+            print("Película encontrada:")
+            print(pelicula["titulo"], "-", pelicula["genero"])
             encontrada = True
-            break  # Detenemos la búsqueda en cuanto la encontramos
+            break
 
     if not encontrada:
-        print("Lo sentimos, esa película no está en nuestro catálogo.")
+        print("No se encontró la película.")
 
-# -----------------------------------------------------------------------------
-# LÓGICA DE RECOMENDACIONES (FILTRADO MULTINIVEL)
-# -----------------------------------------------------------------------------
-print("\n--- GENERANDO TUS RECOMENDACIONES PERSONALIZADAS ---")
+# -----------------------------------------
+# RECOMENDACIONES
+# -----------------------------------------
+print("\n--- GENERANDO RECOMENDACIONES ---")
 recomendaciones = []
 
 for pelicula in peliculas:
 
-    # Filtro 1: Calificación mínima de 4 estrellas
+    # Filtro 1: Calificación mínima
     if pelicula["calificacion"] < 4:
         continue
 
-    # Filtro 2: Restricción de edad para el género Thriller
+    # Filtro 2: Restricción de edad para Thriller
     if pelicula["genero"] == "Thriller" and edad <= 18:
         continue
 
-    # Filtro 3: Duración según la preferencia del usuario
+    # Filtro 3: Duración
     if duracion_opcion == "Corta" and pelicula["duracion"] >= 90:
         continue
     elif duracion_opcion == "Media" and not (90 <= pelicula["duracion"] <= 150):
@@ -108,23 +104,26 @@ for pelicula in peliculas:
     elif duracion_opcion == "Larga" and pelicula["duracion"] <= 150:
         continue
 
-    # Filtro 4: Coincidencia de género (o Thriller extra si es adulto)
-    if pelicula["genero"] == genero_usuario or (edad > 18 and pelicula["genero"] == "Thriller"):
+    # Filtro 4: Coincidencia de género
+    # CORRECCIÓN APLICADA AQUÍ:
+    # Se valida nuevamente la edad si el género es Thriller
+    if pelicula["genero"] == genero_usuario:
+        if pelicula["genero"] == "Thriller" and edad <= 18:
+            continue
         recomendaciones.append(pelicula)
 
-# -----------------------------------------------------------------------------
-# PRESENTACIÓN DE RESULTADOS
-# -----------------------------------------------------------------------------
+# -----------------------------------------
+# RESULTADOS
+# -----------------------------------------
 if recomendaciones:
-    print(f"Encontramos estas películas para ti de género {genero_usuario}:")
+    print("Películas recomendadas:")
     for p in recomendaciones:
-        print(f"* {p['titulo']} ({p['duracion']} min) - Calificación: {p['calificacion']}/5")
+        print(f"- {p['titulo']} ({p['duracion']} min)")
 else:
-    # Si no hubo coincidencias, mostramos las de 5 estrellas como sugerencia general
-    print("No encontramos coincidencias exactas con todos tus filtros.")
-    print("Pero te recomendamos estas joyas con calificación perfecta (5/5):")
+    print("No hubo coincidencias exactas.")
+    print("Recomendaciones generales:")
     for p in peliculas:
         if p["calificacion"] == 5:
-            print(f"- {p['titulo']} [{p['genero']}]")
+            print("-", p["titulo"])
 
-print("\n¡Disfruta tu función!")
+print("\nFin del programa.")
