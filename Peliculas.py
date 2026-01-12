@@ -105,7 +105,6 @@ for pelicula in peliculas:
         continue
 
     # Filtro 4: Coincidencia de género
-    # CORRECCIÓN APLICADA AQUÍ:
     # Se valida nuevamente la edad si el género es Thriller
     if pelicula["genero"] == genero_usuario:
         if pelicula["genero"] == "Thriller" and edad <= 18:
